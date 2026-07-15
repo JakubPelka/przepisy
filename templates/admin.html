@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zarządzanie Przepisami</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f8f9fa; padding-top: 20px; }
+        .recipe-list { max-height: 700px; overflow-y: auto; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1 class="mb-4">Panel Zarządzania Przepisami</h1>
+    
+    <div class="row mb-3">
+        <div class="col-md-8">
+            <a href="/add" class="btn btn-primary">Dodaj Nowy Przepis</a>
+            <form action="/export" method="POST" class="d-inline">
+                <button type="submit" class="btn btn-success">Eksportuj do HTML</button>
+            </form>
+        </div>
+        <div class="col-md-4">
+            <input type="text" id="searchInput" class="form-control" placeholder="Szukaj...">
+        </div>
+    </div>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="alert alert-info">
+        {% for message in messages %}
+          {{ message }}<br>
+        {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <div class="card recipe-list">
+        <div class="card-body">
+            <table class="table table-hover" id="recipeTable">
+                <thead>
+                    <tr>
+                        <th>ID / Tytuł</th>
+                        <th>Kategoria</th>
+                        <th>Kcal</th>
+                        <th>Akcje</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in recipes %}
+                    <tr>
+                        <td>
+                            <strong>{{ r.title }}</strong><br>
+                            <small class="text-muted">{{ r.id }}</small>
+                        </td>
+                        <td>{{ r.category }}</td>
+                        <td>{{ r.kcal }}</td>
+                        <td>
+                            <a href="/edit/{{ r.id }}" class="btn btn-sm btn-outline-primary">Edytuj</a>
+                            <form action="/delete/{{ r.id }}" method="POST" class="d-inline" onsubmit="return confirm('Na pewno usunąć?');">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Usuń</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('searchInput').addEventListener('keyup', function() {
+    let filter = this.value.toLowerCase();
+    let rows = document.querySelectorAll('#recipeTable tbody tr');
+    
+    rows.forEach(row => {
+        let text = row.textContent.toLowerCase();
+        row.style.display = text.includes(filter) ? '' : 'none';
+    });
+});
+</script>
+</body>
+</html>

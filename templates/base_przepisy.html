@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+
+<html lang="pl">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>Przepisy z archiwum Dieta.zip</title>
+<style>
+    :root {
+      --bg: #f7f7f5;
+      --surface: #ffffff;
+      --text: #1f2328;
+      --muted: #5f6b76;
+      --line: #d8dee4;
+      --accent: #0b57d0;
+      --accent-soft: #eaf2ff;
+      --shadow: 0 8px 24px rgba(0,0,0,.06);
+      --radius: 14px;
+      --sidebar: 360px;
+      scroll-behavior: smooth;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .page {
+      width: min(1600px, calc(100% - 32px));
+      margin: 24px auto 48px;
+      display: grid;
+      grid-template-columns: minmax(280px, var(--sidebar)) minmax(0, 1fr);
+      gap: 24px;
+      align-items: start;
+    }
+    aside { position: sticky; top: 16px; }
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .sidebar-card { padding: 18px; margin-bottom: 18px; }
+    .search-wrap input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      font-size: 15px;
+      background: #fff;
+    }
+    .search-wrap p { margin: 10px 0 0; color: var(--muted); font-size: 14px; }
+    .quick-links ul, .toc-group ul { list-style: none; padding: 0; margin: 0; }
+    .quick-links li + li { margin-top: 8px; }
+    .quick-links a { display: flex; justify-content: space-between; gap: 12px; padding: 8px 10px; border-radius: 10px; }
+    .quick-links a:hover { background: var(--accent-soft); text-decoration: none; }
+    .quick-links span { color: var(--muted); }
+    .toc-group { border-top: 1px solid var(--line); padding-top: 10px; margin-top: 10px; }
+    .toc-group:first-of-type { border-top: 0; padding-top: 0; margin-top: 0; }
+    .toc-group summary { cursor: pointer; color: var(--text); font-weight: 600; }
+    .toc-group summary a { color: inherit; }
+    .toc-group ul { margin-top: 8px; padding-left: 14px; max-height: 260px; overflow: auto; }
+    .toc-group li + li { margin-top: 4px; }
+    .toc-group a { font-size: 14px; color: var(--muted); }
+    main .hero { padding: 24px 28px; margin-bottom: 18px; }
+    .hero h1 { margin: 0 0 12px; font-size: clamp(28px, 4vw, 42px); line-height: 1.15; }
+    .hero p { margin: 0 0 12px; color: var(--muted); }
+    .toc-inline { padding: 20px 24px; margin-bottom: 18px; }
+    .toc-inline h2 { margin-top: 0; }
+    .category { margin-bottom: 28px; }
+    .category-header { display: flex; justify-content: space-between; gap: 16px; align-items: end; margin-bottom: 14px; }
+    .category h2 { margin: 0; font-size: 28px; }
+    .category-meta { margin: 0; color: var(--muted); }
+    .recipe {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 20px 24px;
+      margin-bottom: 16px;
+      scroll-margin-top: 24px;
+    }
+    .recipe h3 { margin-top: 0; margin-bottom: 10px; font-size: 22px; }
+    .recipe p { margin: 0 0 12px; }
+    .recipe ul, .recipe ol { margin: 0 0 14px 22px; }
+    .recipe li + li { margin-top: 4px; }
+    .recipe em { color: var(--muted); }
+    .recipe strong { color: var(--text); }
+    .back-top { display: inline-block; margin-top: 8px; font-size: 14px; }
+    .hidden { display: none !important; }
+    .results-bar { margin-top: 8px; font-size: 14px; color: var(--muted); }
+    @media (max-width: 1100px) {
+      .page { grid-template-columns: 1fr; }
+      aside { position: static; }
+    }
+  
+    .filters-inline { display: grid; gap: 10px; margin-top: 12px; }
+    .filters-inline input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      font-size: 15px;
+      background: #fff;
+    }
+    .search-help { margin-top: 10px; color: var(--muted); font-size: 14px; }
+    .ingredient-index-wrap { padding: 20px 24px; margin-top: 18px; }
+    .letter-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 18px; }
+    .letter-nav a {
+      display: inline-block; min-width: 34px; text-align: center;
+      padding: 6px 10px; border-radius: 999px; background: var(--accent-soft);
+      text-decoration: none;
+    }
+    .ingredient-group { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 12px; }
+    .ingredient-group:first-of-type { border-top: 0; padding-top: 0; margin-top: 0; }
+    .ingredient-group summary { cursor: pointer; font-weight: 700; }
+    .ingredient-list { list-style: none; padding: 0; margin: 10px 0 0; }
+    .ingredient-list li + li { margin-top: 10px; }
+    .ingredient-name { font-weight: 600; }
+    .ingredient-count { color: var(--muted); font-size: 14px; }
+    .ingredient-recipes { margin-top: 4px; font-size: 14px; }
+    .ingredient-recipes a { color: var(--muted); }
+
+    .nutrition-note { margin-top: 12px; padding: 12px 14px; background: var(--accent-soft); border: 1px solid #cfe0ff; border-radius: 12px; color: var(--text); }
+    .nutrition { margin: 14px 0 16px; padding: 14px 16px; background: #f9fbff; border: 1px solid var(--line); border-radius: 12px; }
+    .nutrition-title { margin: 0 0 10px; font-weight: 700; font-size: 15px; }
+    .nutrition-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+    .nutrition-item { background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+    .nutrition-label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: .04em; }
+    .nutrition-value { font-size: 18px; font-weight: 700; }
+    @media (max-width: 760px) { .nutrition-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+</style>
+</head>
+<body>
+<div class="page">
+<aside>
+<section class="panel sidebar-card search-wrap">
+<label for="recipe-search"><strong>Szukaj przepisu</strong></label>
+<input autocomplete="off" id="recipe-search" placeholder="Wpisz nazwę, składnik lub frazę..." type="search"/>
+<div class="filters-inline"><label for="ingredient-search"><strong>Filtr po składnikach</strong></label><input autocomplete="off" id="ingredient-search" placeholder="np. seler, jajka, pomidor" type="search"/></div><p class="search-help">Pierwsze pole szuka po nazwie i treści. Drugie filtruje po składnikach; kilka składników rozdziel przecinkami.</p>
+<div class="results-bar" id="results-bar"></div>
+</section>
+<section class="panel sidebar-card quick-links" id="spis-tresci">
+<h2>Spis treści</h2>
+<ul>
+<li><a href="#sniadanie">Śniadanie <span>118</span></a></li><li><a href="#lunch">Lunch <span>62</span></a></li><li><a href="#obiad">Obiad <span>107</span></a></li><li><a href="#przekaski">Przekąski <span>86</span></a></li>
+<li><a href="#skorowidz-skladnikow">Skorowidz składników <span>A–Z</span></a></li></ul>
+</section>
+<section class="panel sidebar-card">
+<h2>Przepisy w sekcjach</h2>
+<details class="toc-group">
+<summary><a href="#sniadanie">Śniadanie (118)</a></summary>
+<ul>
+<li><a href="#sniadanie-bruschetta-z-awokado">Bruschetta z awokado</a></li>
+<li><a href="#sniadanie-bruschetta-z-pasta-jajeczna-z-oliwkami">Bruschetta z pastą jajeczną z oliwkami</a></li>
+<li><a href="#sniadanie-chleb-w-jajku-z-serkiem-wiejskim-i-papryka">Chleb w jajku z serkiem wiejskim i papryką</a></li>
+<li><a href="#sniadanie-chleb-z-jajkiem-na-twardo-tunczykiem-i-salata-pomidor">Chleb z jajkiem na twardo, tuńczykiem i sałatą, pomidor</a></li>
+<li><a href="#sniadanie-chleb-z-jajkiem-sadzonym-grillowana-cukinia-i-papryka">Chleb z jajkiem sadzonym, grillowaną cukinią i papryką</a></li>
+<li><a href="#sniadanie-chleb-z-jajkiem-salata-i-pomidorem">Chleb z jajkiem, sałatą i pomidorem</a></li>
+<li><a href="#sniadanie-chleb-z-jajkiem-serkiem-burakiem-i-szpinakiem">Chleb z jajkiem, serkiem, burakiem i szpinakiem</a></li>
+<li><a href="#sniadanie-frittata-pieczarkowa">Frittata pieczarkowa</a></li>
+<li><a href="#sniadanie-gofry-z-malinami">Gofry z malinami</a></li>
+<li><a href="#sniadanie-grahamka-z-twarogiem-burakiem-awokado-i-rukola">Grahamka z twarogiem, burakiem, awokado i rukolą</a></li>
+<li><a href="#sniadanie-granola-kakaowa-z-jogurtem-cynamonem-i-pestkami-dyni">Granola kakaowa z jogurtem, cynamonem i pestkami dyni</a></li>
+<li><a href="#sniadanie-grzanki-z-pasta-oliwkowa-rzodkiewka-i-pomidorem">Grzanki z pastą oliwkową, rzodkiewką i pomidorem</a></li>
+<li><a href="#sniadanie-grzanki-z-pasta-z-awokado-oliwkami-i-papryka">Grzanki z pastą z awokado, oliwkami i papryką</a></li>
+<li><a href="#sniadanie-grzanki-z-pasta-z-oliwek-pomidor">Grzanki z pastą z oliwek, pomidor</a></li>
+<li><a href="#sniadanie-grzanki-z-pomidorem-papryka-i-cukinia">Grzanki z pomidorem, papryką i cukinią</a></li>
+<li><a href="#sniadanie-grzanki-z-serkiem-wiejskim-oliwki-pomidor">Grzanki z serkiem wiejskim, oliwki, pomidor</a></li>
+<li><a href="#sniadanie-grzanki-z-serkiem-wiejskim-oliwa-i-oregano-pomidor">Grzanki z serkiem wiejskim, oliwą i oregano, pomidor</a></li>
+<li><a href="#sniadanie-hiszpanska-tortilla-pomidor">Hiszpańska tortilla + pomidor</a></li>
+<li><a href="#sniadanie-hiszpanskie-pomidorowe-kanapki-z-mozzarella-i-oliwkami">Hiszpańskie pomidorowe kanapki z mozzarellą i oliwkami</a></li>
+<li><a href="#sniadanie-jaglanka-z-morelami-i-migdalami">Jaglanka z morelami i migdałami</a></li>
+<li><a href="#sniadanie-jajecznica-z-cebula-papryka-i-pomidorem-grzanki-z-oliwa">Jajecznica z cebulą, papryką i pomidorem, grzanki z oliwą</a></li>
+<li><a href="#sniadanie-jajecznica-z-cukinia-i-natka-chleb-rzodkiewka">Jajecznica z cukinią i natką, chleb, rzodkiewka</a></li>
+<li><a href="#sniadanie-jajecznica-z-kasza-szczypiorkiem-i-rzodkiewka">Jajecznica z kaszą, szczypiorkiem i rzodkiewką</a></li>
+<li><a href="#sniadanie-jajecznica-z-kukurydza-i-pieczywem">Jajecznica z kukurydzą i pieczywem</a></li>
+<li><a href="#sniadanie-jajecznica-z-kurkami-i-baklazanem-z-pieczywem">Jajecznica z kurkami i bakłażanem z pieczywem</a></li>
+<li><a href="#sniadanie-jajecznica-z-marchwia-i-pieczarkami-chleb">Jajecznica z marchwią i pieczarkami, chleb</a></li>
+<li><a href="#sniadanie-jajecznica-z-oliwkami-i-szynka-pieczywo">Jajecznica z oliwkami i szynką, pieczywo</a></li>
+<li><a href="#sniadanie-jajecznica-z-papryka-pieczywo-slupki-marchwi">Jajecznica z papryką, pieczywo, słupki marchwi</a></li>
+<li><a href="#sniadanie-jajecznica-z-pieczarkami-i-brokulami-awokado-i-chleb">Jajecznica z pieczarkami i brokułami, awokado i chleb</a></li>
+<li><a href="#sniadanie-jajecznica-z-pieczarkami-i-otrebami-z-pieczywem">Jajecznica z pieczarkami i otrębami z pieczywem</a></li>
+<li><a href="#sniadanie-jajecznica-z-pieczarkami-szynka-i-grzanka">Jajecznica z pieczarkami, szynką i grzanką</a></li>
+<li><a href="#sniadanie-jajecznica-z-pomidorami-pieczywo">Jajecznica z pomidorami, pieczywo</a></li>
+<li><a href="#sniadanie-jajecznica-z-pomidorami-rodzynkami-i-pieczywem">Jajecznica z pomidorami, rodzynkami i pieczywem</a></li>
+<li><a href="#sniadanie-jajecznica-awokado-surowka-z-pomidora-bulgur">Jajecznica, awokado, surówka z pomidora, bulgur</a></li>
+<li><a href="#sniadanie-jajecznica-pieczarki-duszone-chleb-z-twarogiem-i-pomidorem">Jajecznica, pieczarki duszone, chleb z twarogiem i pomidorem</a></li>
+<li><a href="#sniadanie-jajka-sadzone-na-szparagach">Jajka sadzone na szparagach</a></li>
+<li><a href="#sniadanie-jajka-sadzone-chleb-z-twarogiem-szczypiorkiem-i-pomidorem">Jajka sadzone, chleb z twarogiem, szczypiorkiem i pomidorem</a></li>
+<li><a href="#sniadanie-jajka-sadzone-serek-wiejski-chleb-oliwki-pomidor">Jajka sadzone, serek wiejski, chleb, oliwki, pomidor</a></li>
+<li><a href="#sniadanie-jajka-w-koszulkach-z-sosem-pomidorowym">Jajka w koszulkach z sosem pomidorowym</a></li>
+<li><a href="#sniadanie-jajka-zapiekane-z-kukurydza-i-fasola-i-pieczywem">Jajka zapiekane z kukurydzą i fasolą i pieczywem</a></li>
+<li><a href="#sniadanie-jogurt-prazonymi-wiorkami-kokosa-platkami-i-malinami">Jogurt prażonymi wiórkami kokosa, płatkami i malinami</a></li>
+<li><a href="#sniadanie-jogurt-z-platkami-wisniami-bananem-i-orzechami">Jogurt z płatkami, wiśniami, bananem i orzechami</a></li>
+<li><a href="#sniadanie-jogurtowe-musli-z-jablkiem-cynamonem-i-orzechami">Jogurtowe musli z jabłkiem, cynamonem i orzechami</a></li>
+<li><a href="#sniadanie-kanapka-z-awokado-natka-i-papryka-podana-z-kefirem">Kanapka z awokado, natką i papryką, podana z kefirem</a></li>
+<li><a href="#sniadanie-kanapka-z-awokado-wedzonym-lososiem-i-pestkami-dyni">Kanapka z awokado, wędzonym łososiem i pestkami dyni</a></li>
+<li><a href="#sniadanie-kanapka-z-jajkiem-papryka-i-szczypiorkiem">Kanapka z jajkiem, papryką i szczypiorkiem</a></li>
+<li><a href="#sniadanie-kanapka-z-maslem-bazyliowym-salata-i-szynka">Kanapka z masłem bazyliowym, sałatą i szynką</a></li>
+<li><a href="#sniadanie-kanapka-z-miodem-i-migdalami">Kanapka z miodem i migdałami</a></li>
+<li><a href="#sniadanie-kanapka-z-miodem-i-serkiem-wiejskim">Kanapka z miodem i serkiem wiejskim</a></li>
+<li><a href="#sniadanie-kanapka-z-mozzarella-pomidorem-i-salata-kefir">Kanapka z mozzarellą, pomidorem i sałatą, kefir</a></li>
+<li><a href="#sniadanie-kanapka-z-pasta-jajeczno-pieczarkowa-i-pomidorem">Kanapka z pastą jajeczno-pieczarkową i pomidorem</a></li>
+<li><a href="#sniadanie-kanapka-z-pasta-jajeczno-pieczarkowa-salata-i-rzodkiewka">Kanapka z pastą jajeczno-pieczarkową sałatą i rzodkiewką</a></li>
+<li><a href="#sniadanie-kanapka-z-pasta-twarogowa">Kanapka z pastą twarogową</a></li>
+<li><a href="#sniadanie-kanapka-z-pasta-z-zielonego-groszku-papryka-i-kukurydza">Kanapka z pastą z zielonego groszku, papryką i kukurydzą</a></li>
+<li><a href="#sniadanie-kanapka-z-pomidorem-i-szczypiorkiem">Kanapka z pomidorem i szczypiorkiem</a></li>
+<li><a href="#sniadanie-kanapka-z-salata-i-pasta-jajeczno-pieczarkowa">Kanapka z sałatą i pastą jajeczno-pieczarkową</a></li>
+<li><a href="#sniadanie-kanapka-z-serkiem-koperkowym-salata-i-szynka">Kanapka z serkiem koperkowym, sałatą i szynką</a></li>
+<li><a href="#sniadanie-kanapka-z-serkiem-wiejskim-i-pomidorem">Kanapka z serkiem wiejskim i pomidorem</a></li>
+<li><a href="#sniadanie-kanapka-z-serkiem-papryka-i-pestkami-slupki-marchwi">Kanapka z serkiem, papryką i pestkami, słupki marchwi</a></li>
+<li><a href="#sniadanie-kanapka-z-szynka-jajkiem-i-szczypiorkiem">Kanapka z szynką, jajkiem i szczypiorkiem</a></li>
+<li><a href="#sniadanie-kanapka-z-twarogiem-oliwa-ziolowa-i-papryka-pomidor">Kanapka z twarogiem, oliwą ziołową i papryką, pomidor</a></li>
+<li><a href="#sniadanie-kanapki-z-awokado-i-pomidorem-serkiem-i-pomidorem">Kanapki z awokado i pomidorem, serkiem i pomidorem</a></li>
+<li><a href="#sniadanie-kanapki-z-bialym-serem-bananem-i-miodem">Kanapki z białym serem, bananem i miodem</a></li>
+<li><a href="#sniadanie-kanapki-z-kurczakiem-i-warzywami">Kanapki z kurczakiem i warzywami</a></li>
+<li><a href="#sniadanie-kanapki-z-maslem-czosnkowym-papryka-i-rzodkiewka">Kanapki z masłem czosnkowym, papryką i rzodkiewką</a></li>
+<li><a href="#sniadanie-kanapki-z-maslem-czosnkowym-pomidorem-i-szczypiorkiem">Kanapki z masłem czosnkowym, pomidorem i szczypiorkiem</a></li>
+<li><a href="#sniadanie-kanapki-z-maslem-rzodkiewka-i-szczypiorkiem">Kanapki z masłem, rzodkiewką i szczypiorkiem</a></li>
+<li><a href="#sniadanie-kanapki-z-pasta-jablkowo-twarogowa">Kanapki z pastą jabłkowo-twarogową</a></li>
+<li><a href="#sniadanie-kanapki-z-pasta-jajeczna-i-surowka-pomidor-papryka">Kanapki z pastą jajeczną i surówką (pomidor, papryka)</a></li>
+<li><a href="#sniadanie-kanapki-z-pasta-koperkowo-pomidorowa">Kanapki z pastą koperkowo-pomidorową</a></li>
+<li><a href="#sniadanie-kanapki-z-pasta-z-baklazana-i-papryki">Kanapki z pastą z bakłażana i papryki</a></li>
+<li><a href="#sniadanie-kanapki-z-pasta-z-serka-i-awokado-z-pomidorem-i-pietruszka">Kanapki z pastą z serka i awokado z pomidorem i pietruszką</a></li>
+<li><a href="#sniadanie-kanapki-z-serem-bialym-i-miodem">Kanapki z serem białym i miodem</a></li>
+<li><a href="#sniadanie-kanapki-z-szynka-i-oliwkami">Kanapki z szynką i oliwkami</a></li>
+<li><a href="#sniadanie-kasza-jaglana-z-malinami-i-tarta-czekolada">Kasza jaglana z malinami i tartą czekoladą</a></li>
+<li><a href="#sniadanie-kasza-z-jogurtem-ananasem-kakao-i-wiorkami">Kasza z jogurtem, ananasem, kakao i wiórkami</a></li>
+<li><a href="#sniadanie-kokosowa-owsianka-z-malinami">Kokosowa owsianka z malinami</a></li>
+<li><a href="#sniadanie-koktajl-z-ananasem-awokado-i-siemieniem-lnianym">Koktajl z ananasem, awokado i siemieniem lnianym</a></li>
+<li><a href="#sniadanie-miodowa-owsianka-z-bakaliami">Miodowa owsianka z bakaliami</a></li>
+<li><a href="#sniadanie-mleko-jajko-na-twardo-pomidor-pieczywo">Mleko, jajko na twardo, pomidor, pieczywo</a></li>
+<li><a href="#sniadanie-omlet-marchewkowy">Omlet marchewkowy</a></li>
+<li><a href="#sniadanie-omlet-pieczony-ze-szpinakiem-papryka-i-serkiem-chleb">Omlet pieczony ze szpinakiem, papryką i serkiem + chleb</a></li>
+<li><a href="#sniadanie-omlet-z-brokulami-chleb-pomidor">Omlet z brokułami + chleb + pomidor</a></li>
+<li><a href="#sniadanie-omlet-z-marchewka-i-pieczywem">Omlet z marchewką i pieczywem</a></li>
+<li><a href="#sniadanie-omlet-z-mozzarella-i-oliwkami">Omlet z mozzarellą i oliwkami</a></li>
+<li><a href="#sniadanie-omlet-z-pieczarkami-i-pieczywem">Omlet z pieczarkami i pieczywem</a></li>
+<li><a href="#sniadanie-omlet-z-rzodkiewka-i-pieczywem-razowym-z-szynka">Omlet z rzodkiewką i pieczywem razowym z szynką</a></li>
+<li><a href="#sniadanie-owsianka-bounty">Owsianka bounty</a></li>
+<li><a href="#sniadanie-owsianka-z-bakaliami">Owsianka z bakaliami</a></li>
+<li><a href="#sniadanie-owsianka-z-czekolada-kiwi-i-wiorkami-kokosowymi">Owsianka z czekoladą, kiwi i wiórkami kokosowymi</a></li>
+<li><a href="#sniadanie-owsianka-z-czekolada-kokosem-z-sosem-malinowym">Owsianka z czekoladą, kokosem z sosem malinowym</a></li>
+<li><a href="#sniadanie-owsianka-z-czeresniami-i-slonecznikiem">Owsianka z czereśniami i słonecznikiem</a></li>
+<li><a href="#sniadanie-owsianka-z-jablkiem-jogurtem-i-cynamonem">Owsianka z jabłkiem, jogurtem i cynamonem</a></li>
+<li><a href="#sniadanie-owsianka-z-sezamem-i-jablkiem">Owsianka z sezamem i jabłkiem</a></li>
+<li><a href="#sniadanie-pieczywo-z-pasta-twarogowa-z-jajkiem">Pieczywo z pastą twarogową z jajkiem</a></li>
+<li><a href="#sniadanie-placuszki-pelnoziarniste-z-jogurtem-i-jagodami">Placuszki pełnoziarniste z jogurtem i jagodami</a></li>
+<li><a href="#sniadanie-salatka-z-jajkiem-sadzonym-i-oliwkami">Sałatka z jajkiem sadzonym i oliwkami</a></li>
+<li><a href="#sniadanie-salatka-z-jajkiem-oliwkami-i-pomidorami">Sałatka z jajkiem, oliwkami i pomidorami</a></li>
+<li><a href="#sniadanie-salatka-z-marchewka-papryka-jajkiem-i-sosem-jogurtowym">Sałatka z marchewką, papryką, jajkiem i sosem jogurtowym</a></li>
+<li><a href="#sniadanie-salatka-z-rzodkiewka-kurczakiem-i-sosem-jogurtowym">Sałatka z rzodkiewką, kurczakiem i sosem jogurtowym</a></li>
+<li><a href="#sniadanie-salatka-z-serkiem-kukurydza-papryka-i-pestkami">Sałatka z serkiem, kukurydzą, papryką i pestkami</a></li>
+<li><a href="#sniadanie-salatka-z-soczewica-suszonymi-pomidorami-i-oliwkami">Sałatka z soczewicą, suszonymi pomidorami i oliwkami</a></li>
+<li><a href="#sniadanie-serek-wiejski-z-orzechami-i-pomidorami-pieczywo">Serek wiejski z orzechami i pomidorami, pieczywo</a></li>
+<li><a href="#sniadanie-serek-wiejski-z-pomidorem-szczypiorkiem-i-oliwkami-chleb">Serek wiejski z pomidorem, szczypiorkiem i oliwkami, chleb</a></li>
+<li><a href="#sniadanie-serek-wiejski-z-suszonymi-pomidorami-i-szynka-pieczywo">Serek wiejski z suszonymi pomidorami i szynką, pieczywo</a></li>
+<li><a href="#sniadanie-serek-wiejski-ze-szczypiorkiem-i-jajka-na-miekko">Serek wiejski ze szczypiorkiem i jajka na miękko</a></li>
+<li><a href="#sniadanie-szaszlyki-a-la-caprese">Szaszłyki a'la caprese</a></li>
+<li><a href="#sniadanie-szparagi-z-pieczywem-i-jajkiem-sadzonym">Szparagi z pieczywem i jajkiem sadzonym</a></li>
+<li><a href="#sniadanie-tost-z-awokado-i-szynka-a-la-jamie-oliver">Tost z awokado i szynką a'la Jamie Oliver</a></li>
+<li><a href="#sniadanie-tosty-warzywne-z-mozzarella">Tosty warzywne z mozzarellą</a></li>
+<li><a href="#sniadanie-tosty-z-jajkiem-i-szynka">Tosty z jajkiem i szynką</a></li>
+<li><a href="#sniadanie-tosty-z-mozzarella-i-szynka-z-surowymi-warzywami">Tosty z mozzarellą i szynką z surowymi warzywami</a></li>
+<li><a href="#sniadanie-tosty-z-twarogiem-i-pomidorem-z-bazylia">Tosty z twarogiem i pomidorem z bazylią</a></li>
+<li><a href="#sniadanie-twarozek-z-platkami-owsianymi-bakaliami-i-pieczywem">Twarożek z płatkami owsianymi, bakaliami i pieczywem</a></li>
+<li><a href="#sniadanie-wytrawna-jaglanka-z-pesto-pietruszkowym">Wytrawna jaglanka z pesto pietruszkowym</a></li>
+<li><a href="#sniadanie-wytrawna-owsianka-curry-z-pomidorem">Wytrawna owsianka curry z pomidorem</a></li>
+<li><a href="#sniadanie-zapiekanka-z-mozzarella-pomidorem-i-szpinakiem">Zapiekanka z mozzarellą, pomidorem i szpinakiem</a></li>
+<li><a href="#sniadanie-zolty-twarozek-z-rzodkiewka-papryka-chleb">„Żółty” twarożek z rzodkiewką, papryką + chleb</a></li>
+</ul>
+</details><details class="toc-group">
+<summary><a href="#lunch">Lunch (62)</a></summary>
+<ul>
+<li><a href="#lunch-bruschetta-pomidorowa">Bruschetta pomidorowa</a></li>
+<li><a href="#lunch-chilli-sin-carne">Chilli sin carne</a></li>
+<li><a href="#lunch-chleb-z-awokado-i-serkiem-wiejskim-slupki-papryki">Chleb z awokado i serkiem wiejskim, słupki papryki</a></li>
+<li><a href="#lunch-chleb-z-pasta-paprykowo-pomidorowa-i-twarogiem">Chleb z pastą paprykowo-pomidorową i twarogiem</a></li>
+<li><a href="#lunch-czerwona-kanapka">Czerwona kanapka</a></li>
+<li><a href="#lunch-fasolka-szparagowa-z-papryka-i-pieczywem">Fasolka szparagowa z papryką i pieczywem</a></li>
+<li><a href="#lunch-grzanki-z-pasta-z-awokado-i-oliwkami-pomidor">Grzanki z pastą z awokado i oliwkami + pomidor</a></li>
+<li><a href="#lunch-hiszpanskie-pomidorowe-kanapki">Hiszpańskie pomidorowe kanapki</a></li>
+<li><a href="#lunch-jajecznica-z-cukinia-chleb-pomidor">Jajecznica z cukinią + chleb, pomidor</a></li>
+<li><a href="#lunch-kanapka-wiosenna-z-tunczykiem">Kanapka wiosenna z tuńczykiem</a></li>
+<li><a href="#lunch-kanapka-z-mozzarella-i-oliwa-ziolowa-pomidor">Kanapka z mozzarellą i oliwą ziołową, pomidor</a></li>
+<li><a href="#lunch-kanapka-z-papryka-rzodkiewka-oraz-pasta-z-jajek-i-zieleniny">Kanapka z papryką, rzodkiewką oraz pastą z jajek i zieleniny</a></li>
+<li><a href="#lunch-kanapka-z-pasta-paprykowa-i-oliwkami">Kanapka z pastą paprykową i oliwkami</a></li>
+<li><a href="#lunch-kanapka-z-pasta-paprykowa-i-szynka">Kanapka z pastą paprykową i szynką</a></li>
+<li><a href="#lunch-kanapka-z-salata-i-papryka">Kanapka z sałatą i papryką</a></li>
+<li><a href="#lunch-kanapka-z-salata-pomidorem-i-koperkiem">Kanapka z sałatą, pomidorem i koperkiem</a></li>
+<li><a href="#lunch-kanapka-ze-szparagami-jajkiem-oraz-rzodkiewka">Kanapka ze szparagami, jajkiem oraz rzodkiewką</a></li>
+<li><a href="#lunch-kanapki-z-pasta-brokulowa-pomidorem-i-szczypiorkiem">Kanapki z pastą brokułową, pomidorem i szczypiorkiem</a></li>
+<li><a href="#lunch-kanapki-z-pasta-z-serka-i-awokado">Kanapki z pastą z serka i awokado</a></li>
+<li><a href="#lunch-kanapki-z-pasztetem-z-pieczarek">Kanapki z pasztetem z pieczarek</a></li>
+<li><a href="#lunch-kanapki-z-serkiem-winogronem-i-orzechami">Kanapki z serkiem, winogronem i orzechami</a></li>
+<li><a href="#lunch-kasza-jaglana-z-porem-i-pieczarkami">Kasza jaglana z porem i pieczarkami</a></li>
+<li><a href="#lunch-kaszotto-z-kasza-gryczana-szynka-i-porem">Kaszotto z kaszą gryczaną, szynką i porem</a></li>
+<li><a href="#lunch-koktajl-truskawkowo-bananowy-na-kefirze-z-siemieniem-lnianym">Koktajl truskawkowo-bananowy na kefirze z siemieniem lnianym</a></li>
+<li><a href="#lunch-kotlety-drobiowe-ze-szpinakiem-chleb-pomidor">Kotlety drobiowe ze szpinakiem, chleb, pomidor</a></li>
+<li><a href="#lunch-kurczak-z-cukinia-i-kasza">Kurczak z cukinią i kaszą</a></li>
+<li><a href="#lunch-kuskus-z-awokado-i-pomidorem">Kuskus z awokado i pomidorem</a></li>
+<li><a href="#lunch-kuskus-z-gruszka-i-orzechami">Kuskus z gruszką i orzechami</a></li>
+<li><a href="#lunch-kuskus-z-jablkiem-i-migdalami">Kuskus z jabłkiem i migdałami</a></li>
+<li><a href="#lunch-kuskus-z-warzywami">Kuskus z warzywami</a></li>
+<li><a href="#lunch-makaron-z-cukinia-groszkiem-koperkiem-i-tunczykiem">Makaron z cukinią, groszkiem, koperkiem i tuńczykiem</a></li>
+<li><a href="#lunch-makaron-z-pieczarkami-brokulem-i-sosem-czosnkowym">Makaron z pieczarkami, brokułem i sosem czosnkowym</a></li>
+<li><a href="#lunch-makaron-z-truskawkami-i-migdalami">Makaron z truskawkami i migdałami</a></li>
+<li><a href="#lunch-meksykanska-salatka-z-ryzem">Meksykańska sałatka z ryżem</a></li>
+<li><a href="#lunch-muffiny-warzywne">Muffiny warzywne</a></li>
+<li><a href="#lunch-pasta-z-kaszy-jaglanej-i-brokula-z-pieczywem">Pasta z kaszy jaglanej i brokuła z pieczywem</a></li>
+<li><a href="#lunch-pasta-z-pieczonego-baklazana-z-chlebem">Pasta z pieczonego bakłażana z chlebem</a></li>
+<li><a href="#lunch-pieczarki-portobello-z-mozzarella-natka-i-pomidorem-chleb">Pieczarki Portobello z mozzarellą, natką i pomidorem, chleb</a></li>
+<li><a href="#lunch-placuszki-z-selera">Placuszki z selera</a></li>
+<li><a href="#lunch-ryz-z-orzechami">Ryż z orzechami</a></li>
+<li><a href="#lunch-salatka-makaronowa-z-kurczakiem-i-brokulami">Sałatka makaronowa z kurczakiem i brokułami</a></li>
+<li><a href="#lunch-salatka-ryzowa-z-pieczarkami-i-porem">Sałatka ryżowa z pieczarkami i porem</a></li>
+<li><a href="#lunch-salatka-z-baklazanow-z-pieczywem">Sałatka z bakłażanów z pieczywem</a></li>
+<li><a href="#lunch-salatka-z-dynia-papryka-pomidorem-cebula-i-oliwkami-chleb">Sałatka z dynią, papryką, pomidorem, cebulą i oliwkami, chleb</a></li>
+<li><a href="#lunch-salatka-z-fasola-suszonymi-pomidorami-i-natka-pietruszki">Sałatka z fasolą, suszonymi pomidorami i natką pietruszki</a></li>
+<li><a href="#lunch-salatka-z-mozzarella-szpinakiem-papryka-migdalami-i-sezamem">Sałatka z mozzarellą, szpinakiem, papryką, migdałami i sezamem</a></li>
+<li><a href="#lunch-salatka-z-pomaranczy-i-szynki-pieczywo">Sałatka z pomarańczy i szynki, pieczywo</a></li>
+<li><a href="#lunch-salatka-z-pomidorem-serkiem-wiejskim-i-salata-chleb">Sałatka z pomidorem, serkiem wiejskim i sałatą, chleb</a></li>
+<li><a href="#lunch-salatka-z-soczewicy-kurczaka-orzechow-i-papryki">Sałatka z soczewicy, kurczaka, orzechów i papryki</a></li>
+<li><a href="#lunch-salatka-z-tunczykiem-papryka-i-szczypiorkiem-chleb">Sałatka z tuńczykiem, papryką i szczypiorkiem, chleb</a></li>
+<li><a href="#lunch-salatka-z-ziemniakami-cukinia-pomidorem-i-oliwkami">Sałatka z ziemniakami, cukinią, pomidorem i oliwkami</a></li>
+<li><a href="#lunch-serek-wiejski-z-fasola-i-tunczykiem-pieczywo">Serek wiejski z fasolą i tuńczykiem, pieczywo</a></li>
+<li><a href="#lunch-serek-wiejski-z-pomidorem-i-platkami-owsianymi">Serek wiejski z pomidorem i płatkami owsianymi</a></li>
+<li><a href="#lunch-serek-wiejski-z-pomidorem-oliwkami-i-koperkiem-marchew-chleb">Serek wiejski z pomidorem, oliwkami i koperkiem + marchew, chleb</a></li>
+<li><a href="#lunch-soczewica-z-szynka-pieczarkami-i-pomidorami">Soczewica z szynką, pieczarkami i pomidorami</a></li>
+<li><a href="#lunch-surowka-z-groszku-i-pieczarek-z-pieczywem">Surówka z groszku i pieczarek z pieczywem</a></li>
+<li><a href="#lunch-surowka-z-marchewki-ananasa-i-brzoskwini-z-pieczywem">Surówka z marchewki, ananasa i brzoskwini z pieczywem</a></li>
+<li><a href="#lunch-surowka-z-papryki-i-cytryny-z-pieczywem">Surówka z papryki i cytryny z pieczywem</a></li>
+<li><a href="#lunch-tortilla-z-farszem-serowym-i-papryka">Tortilla z farszem serowym i papryką</a></li>
+<li><a href="#lunch-tortilla-z-kurczakiem-i-warzywami">Tortilla z kurczakiem i warzywami</a></li>
+<li><a href="#lunch-zupa-krem-z-soczewicy-i-marchwi-z-orzechami">Zupa krem z soczewicy i marchwi z orzechami</a></li>
+<li><a href="#lunch-makaron-z-cukinii-w-pietruszkowym-pesto">„Makaron” z cukinii w pietruszkowym pesto</a></li>
+</ul>
+</details><details class="toc-group">
+<summary><a href="#obiad">Obiad (107)</a></summary>
+<ul>
+<li><a href="#obiad-barszcz-z-makaronem">Barszcz z makaronem</a></li>
+<li><a href="#obiad-bezmiesna-tortilla-a-la-burrito">Bezmięsna tortilla a'la burrito</a></li>
+<li><a href="#obiad-bulgur-z-duszonymi-pieczarkami-i-surowka-kapusta-papryka">Bulgur z duszonymi pieczarkami i surówką (kapusta, papryka)</a></li>
+<li><a href="#obiad-bulgur-z-kurczakiem-groszkiem-i-marchwia">Bulgur z kurczakiem, groszkiem i marchwią</a></li>
+<li><a href="#obiad-bulgarskie-danie-musaka-z-indykiem-i-ziemniakami">Bułgarskie danie (musaka) z indykiem i ziemniakami</a></li>
+<li><a href="#obiad-chili-con-carne-z-ryzem">Chili con carne z ryżem</a></li>
+<li><a href="#obiad-cukinia-faszerowana-kasza-kuskus">Cukinia faszerowana kaszą kuskus</a></li>
+<li><a href="#obiad-cytrynowo-imbirowe-krewetki-z-ryzem">Cytrynowo-imbirowe krewetki z ryżem</a></li>
+<li><a href="#obiad-dhal-z-fasola">Dhal z fasolą</a></li>
+<li><a href="#obiad-dynia-z-kurczakiem-i-makaronem">Dynia z kurczakiem i makaronem</a></li>
+<li><a href="#obiad-grecka-zupa-z-soczewicy">Grecka zupa z soczewicy</a></li>
+<li><a href="#obiad-gulasz-z-kurczaka-z-pomidorami">Gulasz z kurczaka z pomidorami</a></li>
+<li><a href="#obiad-indycze-kawalki-z-pomidorami-i-dipem-twarozkowym">Indycze kawałki z pomidorami i dipem twarożkowym</a></li>
+<li><a href="#obiad-indyk-po-chinsku-z-ryzem">Indyk po chińsku z ryżem</a></li>
+<li><a href="#obiad-indyk-zapiekany-z-pomidorami-i-papryka-z-ryzem">Indyk zapiekany z pomidorami i papryką z ryżem</a></li>
+<li><a href="#obiad-jednogarnkowe-spaghetti-z-pomidorkami-oliwkami-i-pestkami">Jednogarnkowe spaghetti z pomidorkami, oliwkami i pestkami</a></li>
+<li><a href="#obiad-kalafior-z-curry-kasza-i-gotowanym-kurczakiem">Kalafior z curry, kaszą i gotowanym kurczakiem</a></li>
+<li><a href="#obiad-kasza-bulgur-z-indykiem-papryka-porem-i-rodzynkami">Kasza bulgur z indykiem, papryką, porem i rodzynkami</a></li>
+<li><a href="#obiad-kasza-gryczana-z-groszkiem-i-pieczarkami">Kasza gryczana z groszkiem i pieczarkami</a></li>
+<li><a href="#obiad-kasza-gryczana-z-groszkiem-cukinia-i-szpinakiem">Kasza gryczana z groszkiem, cukinią i szpinakiem</a></li>
+<li><a href="#obiad-kasza-gryczana-z-miesem-mielonym-pieczarkami-i-papryka">Kasza gryczana z mięsem mielonym, pieczarkami i papryką</a></li>
+<li><a href="#obiad-kasza-z-cukinia-i-pieczarkami">Kasza z cukinią i pieczarkami</a></li>
+<li><a href="#obiad-kasza-z-kurczakiem-cukinia-i-pomidorem">Kasza z kurczakiem, cukinią i pomidorem</a></li>
+<li><a href="#obiad-klopsiki-marchwiowe-w-sosie-pomidorowym-z-ziemniakami">Klopsiki marchwiowe w sosie pomidorowym z ziemniakami</a></li>
+<li><a href="#obiad-kotleciki-z-kurczakiem-i-porem-z-ziemniakami-i-brokulem">Kotleciki z kurczakiem i porem z ziemniakami i brokułem</a></li>
+<li><a href="#obiad-kotlety-drobiowe-z-bulgurem-i-surowka-salata-papryka">Kotlety drobiowe z bulgurem i surówką (sałata, papryka)</a></li>
+<li><a href="#obiad-kotlety-drobiowo-warzywne-z-bulgurem-i-burakiem">Kotlety drobiowo-warzywne z bulgurem i burakiem</a></li>
+<li><a href="#obiad-krem-marchewkowy-z-ryzem-i-kurczakiem">Krem marchewkowy z ryżem i kurczakiem</a></li>
+<li><a href="#obiad-kurczak-curry-z-ryzem">Kurczak curry z ryżem</a></li>
+<li><a href="#obiad-kurczak-curry-z-ryzem-i-fasolka-szparagowa">Kurczak curry z ryżem i fasolką szparagową</a></li>
+<li><a href="#obiad-kurczak-duszony-z-groszkiem-i-marchewka-z-ziemniakami">Kurczak duszony z groszkiem i marchewką z ziemniakami</a></li>
+<li><a href="#obiad-kurczak-i-kurki-w-pomidorach-z-kasza">Kurczak i kurki w pomidorach z kaszą</a></li>
+<li><a href="#obiad-kurczak-w-jogurcie-z-kasza-i-salatka-z-pomidorow">Kurczak w jogurcie z kaszą i sałatką z pomidorów</a></li>
+<li><a href="#obiad-kurczak-w-marchewce-z-ryzem">Kurczak w marchewce z ryżem</a></li>
+<li><a href="#obiad-kurczak-w-musztardzie-z-bulgurem-i-surowka-z-pomidorow">Kurczak w musztardzie z bulgurem i surówką z pomidorów</a></li>
+<li><a href="#obiad-kurczak-z-czerwona-cebula-i-platkami-owsianymi-na-ryzu">Kurczak z czerwoną cebulą i płatkami owsianymi na ryżu</a></li>
+<li><a href="#obiad-kurczak-z-jablkiem-kasza-jaglana-i-surowka-z-marchwi">Kurczak z jabłkiem, kaszą jaglaną i surówką z marchwi</a></li>
+<li><a href="#obiad-kurczak-z-jajkiem-porem-i-kasza">Kurczak z jajkiem, porem i kaszą</a></li>
+<li><a href="#obiad-kurczak-z-ryzem-fasola-pieczarkami-i-papryka">Kurczak z ryżem, fasolą, pieczarkami i papryką</a></li>
+<li><a href="#obiad-kuskus-z-brokulami-papryka-i-pomidorem">Kuskus z brokułami, papryką i pomidorem</a></li>
+<li><a href="#obiad-kuskus-z-cukinia-papryka-i-pomidorami">Kuskus z cukinią, papryką i pomidorami</a></li>
+<li><a href="#obiad-leczo-z-ryzem">Leczo z ryżem</a></li>
+<li><a href="#obiad-leczo-z-soczewica-i-warzywami">Leczo z soczewicą i warzywami</a></li>
+<li><a href="#obiad-makaron-tasiemki-z-warzywami">Makaron tasiemki z warzywami</a></li>
+<li><a href="#obiad-makaron-z-brokulami-pomidorem-i-mozzarella">Makaron z brokułami, pomidorem i mozzarellą</a></li>
+<li><a href="#obiad-makaron-z-groszkiem-pieczarkami-i-pomidorem">Makaron z groszkiem, pieczarkami i pomidorem</a></li>
+<li><a href="#obiad-makaron-z-kurczakiem-i-pieczarkami">Makaron z kurczakiem i pieczarkami</a></li>
+<li><a href="#obiad-makaron-z-kurczakiem-i-pieczarkami-w-sosie-pomidorowym">Makaron z kurczakiem i pieczarkami w sosie pomidorowym</a></li>
+<li><a href="#obiad-makaron-z-kurczakiem-marchwia-i-brokulami">Makaron z kurczakiem, marchwią i brokułami</a></li>
+<li><a href="#obiad-makaron-z-miesem-mielonym-i-cukinia">Makaron z mięsem mielonym i cukinią</a></li>
+<li><a href="#obiad-makaron-z-pieczarkami-i-oliwkami-w-sosie-pomidorowym">Makaron z pieczarkami i oliwkami w sosie pomidorowym</a></li>
+<li><a href="#obiad-makaron-z-pieczarkami-pomidorkami-i-natka">Makaron z pieczarkami, pomidorkami i natką</a></li>
+<li><a href="#obiad-makaron-z-sosem-cyganskim">Makaron z sosem cygańskim</a></li>
+<li><a href="#obiad-makaron-z-sosem-pomidorowym">Makaron z sosem pomidorowym</a></li>
+<li><a href="#obiad-makaron-z-szynka-i-orzechami-wloskimi">Makaron z szynką i orzechami włoskimi</a></li>
+<li><a href="#obiad-makaron-z-szynka-i-pomidorami">Makaron z szynką i pomidorami</a></li>
+<li><a href="#obiad-makaron-z-szynka-papryka-i-pieczarkami">Makaron z szynką, papryką i pieczarkami</a></li>
+<li><a href="#obiad-makaron-ze-szpinakiem">Makaron ze szpinakiem</a></li>
+<li><a href="#obiad-makaron-ze-szpinakiem-po-rosyjsku">Makaron ze szpinakiem po rosyjsku</a></li>
+<li><a href="#obiad-makaron-ze-szpinakiem-pomidorami-i-czosnkiem">Makaron ze szpinakiem, pomidorami i czosnkiem</a></li>
+<li><a href="#obiad-meksykanska-zupa-z-kukurydza-marchewka-i-kurczakiem">Meksykańska zupa z kukurydzą, marchewką i kurczakiem</a></li>
+<li><a href="#obiad-mintaj-w-sosie-pomidorowo-jogurtowym-z-ziemniakami-i-surowka">Mintaj w sosie pomidorowo-jogurtowym z ziemniakami i surówką</a></li>
+<li><a href="#obiad-mieso-mielone-z-pieczarkami-pomidorami-i-kasza">Mięso mielone z pieczarkami, pomidorami i kaszą</a></li>
+<li><a href="#obiad-mieso-z-kurczaka-z-marchewka-ziemniakami-i-surowka">Mięso z kurczaka z marchewką, ziemniakami i surówką</a></li>
+<li><a href="#obiad-nalesniki-z-brokulami-i-pieczarkami">Naleśniki z brokułami i pieczarkami</a></li>
+<li><a href="#obiad-nalesniki-z-farszem-kukurydziano-cebulowym">Naleśniki z farszem kukurydziano-cebulowym</a></li>
+<li><a href="#obiad-nalesniki-z-kurczakiem-i-warzywami">Naleśniki z kurczakiem i warzywami</a></li>
+<li><a href="#obiad-piers-z-indyka-w-curry-z-ryzem-i-warzywami">Pierś z indyka w curry z ryżem i warzywami</a></li>
+<li><a href="#obiad-piers-z-indyka-w-sosie-grzybowym-z-ryzem">Pierś z indyka w sosie grzybowym z ryżem</a></li>
+<li><a href="#obiad-piers-z-kurczaka-w-musztardzie-z-kasza-i-fasolka-szparagowa">Pierś z kurczaka w musztardzie z kaszą i fasolką szparagową</a></li>
+<li><a href="#obiad-piers-z-kurczaka-z-fasola-i-ziemniakami">Pierś z kurczaka z fasolą i ziemniakami</a></li>
+<li><a href="#obiad-pikantna-zupa-chlebowa">Pikantna zupa chlebowa</a></li>
+<li><a href="#obiad-pikantna-zupa-z-soczewicy">Pikantna zupa z soczewicy</a></li>
+<li><a href="#obiad-pikantne-ziemniaki-z-marchewka-i-groszkiem">Pikantne ziemniaki z marchewką i groszkiem</a></li>
+<li><a href="#obiad-pikantny-ryz-z-kurczakiem-i-warzywami">Pikantny ryż z kurczakiem i warzywami</a></li>
+<li><a href="#obiad-pomidory-zapiekane-z-ryzem">Pomidory zapiekane z ryżem</a></li>
+<li><a href="#obiad-potrawka-z-wolowiny-cukinii-i-papryki-ziemniaki">Potrawka z wołowiny, cukinii i papryki, ziemniaki</a></li>
+<li><a href="#obiad-prosta-paella-z-kurczakiem">Prosta paella z kurczakiem</a></li>
+<li><a href="#obiad-peczotto-z-indykiem-cukinia-i-marchewka">Pęczotto z indykiem, cukinią i marchewką</a></li>
+<li><a href="#obiad-risotto-drobiowe">Risotto drobiowe</a></li>
+<li><a href="#obiad-risotto-z-pieczarkami">Risotto z pieczarkami</a></li>
+<li><a href="#obiad-risotto-z-warzywami">Risotto z warzywami</a></li>
+<li><a href="#obiad-ryba-pieczona-w-foli-z-ryzem-i-szparagami">Ryba pieczona w foli z ryżem i szparagami</a></li>
+<li><a href="#obiad-ryba-w-marchewce-z-ziemniakami">Ryba w marchewce z ziemniakami</a></li>
+<li><a href="#obiad-ryba-w-porach-z-sosem-imbirowo-cyrtynowym-z-ziemniakami">Ryba w porach z sosem imbirowo-cyrtynowym z ziemniakami</a></li>
+<li><a href="#obiad-ryba-z-gotowana-cukinia-ziemniakami-i-marchwia">Ryba z gotowaną cukinią, ziemniakami i marchwią</a></li>
+<li><a href="#obiad-ryba-z-ziemniakami-i-burakami">Ryba z ziemniakami i burakami</a></li>
+<li><a href="#obiad-ryba-zapiekana-z-mozzarella-i-pomidorami-z-kasza-i-fasolka">Ryba zapiekana z mozzarellą i pomidorami z kaszą i fasolką</a></li>
+<li><a href="#obiad-ryba-zapiekana-z-papryka-i-pieczarkami-z-kuskusem">Ryba zapiekana z papryką i pieczarkami z kuskusem</a></li>
+<li><a href="#obiad-ryz-w-sosie-tunczykowo-pomidorowym">Ryż w sosie tuńczykowo-pomidorowym</a></li>
+<li><a href="#obiad-schab-duszony-z-pieczarkami-papryka-i-ryzem">Schab duszony z pieczarkami, papryką i ryżem</a></li>
+<li><a href="#obiad-sopa-de-ajo-ostra-hiszpanska-zupa-czosnkowa">Sopa de ajo (ostra hiszpańska zupa czosnkowa)</a></li>
+<li><a href="#obiad-spaghetti-z-czosnkiem-i-papryka">Spaghetti z czosnkiem i papryką</a></li>
+<li><a href="#obiad-spaghetti-z-pikantnym-sosem-pomidorowym-i-krewetkami">Spaghetti z pikantnym sosem pomidorowym i krewetkami</a></li>
+<li><a href="#obiad-spaghetti-z-soczewica-a-la-kurt-scheller">Spaghetti z soczewicą a'la Kurt Scheller</a></li>
+<li><a href="#obiad-stek-na-zielono-z-ryzem">Stek na zielono z ryżem</a></li>
+<li><a href="#obiad-szaszlyki-z-cukinii-pieczarek-kurczaka-z-salatka">Szaszłyki z cukinii, pieczarek, kurczaka z sałatką</a></li>
+<li><a href="#obiad-szaszlyki-z-ziemniakow-i-cebuli-z-surowka">Szaszłyki z ziemniaków i cebuli z surówką</a></li>
+<li><a href="#obiad-szpinakowa-zupa-z-jajkiem-i-grzankami">Szpinakowa zupa z jajkiem i grzankami</a></li>
+<li><a href="#obiad-tortilla-z-hummusem-kurczakiem-i-warzywami">Tortilla z hummusem, kurczakiem i warzywami</a></li>
+<li><a href="#obiad-wegetarianskie-szaszlyki-na-ostro">Wegetariańskie szaszłyki na ostro</a></li>
+<li><a href="#obiad-wolowina-w-sosie-pomidorowym-z-kasza-gryczana">Wołowina w sosie pomidorowym z kaszą gryczaną</a></li>
+<li><a href="#obiad-wytrawne-nalesniki">Wytrawne naleśniki</a></li>
+<li><a href="#obiad-zielone-placuszki-z-cukinii-z-talarkami-marchewki">Zielone placuszki z cukinii z talarkami marchewki</a></li>
+<li><a href="#obiad-ziemniaki-z-groszkiem-i-kurczakiem-w-curry">Ziemniaki z groszkiem i kurczakiem w curry</a></li>
+<li><a href="#obiad-zupa-bolonska">Zupa bolońska</a></li>
+<li><a href="#obiad-zupa-solferino-z-mozzarella-i-grzankami">Zupa solferino z mozzarellą i grzankami</a></li>
+</ul>
+</details><details class="toc-group">
+<summary><a href="#przekaski">Przekąski (86)</a></summary>
+<ul>
+<li><a href="#przekaski-bananowy-koktajl-mleczno-jogurtowy">Bananowy koktajl mleczno-jogurtowy</a></li>
+<li><a href="#przekaski-bananowy-koktajl-z-chia">Bananowy koktajl z chia</a></li>
+<li><a href="#przekaski-chleb-z-serkiem-kukurydza-i-papryka-orzechy">Chleb z serkiem, kukurydzą i papryką, orzechy</a></li>
+<li><a href="#przekaski-cynamonowy-koktajl-z-gruszka-miodem-i-chia">Cynamonowy koktajl z gruszką, miodem i chia</a></li>
+<li><a href="#przekaski-grzanki-z-pasta-oliwkowa">Grzanki z pastą oliwkową</a></li>
+<li><a href="#przekaski-grzanki-z-pasta-oliwkowa-papryka-i-kukurydza">Grzanki z pastą oliwkową, papryką i kukurydzą</a></li>
+<li><a href="#przekaski-grzanki-z-pasta-oliwkowa-szynka-i-koperkiem">Grzanki z pastą oliwkową, szynką i koperkiem</a></li>
+<li><a href="#przekaski-jablkowy-koktajl-z-orzechami-i-cynamonem">Jabłkowy koktajl z orzechami i cynamonem</a></li>
+<li><a href="#przekaski-jaglane-racuchy-z-jagodami">Jaglane racuchy z jagodami</a></li>
+<li><a href="#przekaski-jogurt-orzechowy">Jogurt orzechowy</a></li>
+<li><a href="#przekaski-jogurt-sezamowy-z-malinami-orzechami-i-cynamonem">Jogurt sezamowy z malinami, orzechami i cynamonem</a></li>
+<li><a href="#przekaski-jogurt-z-musli">Jogurt z musli</a></li>
+<li><a href="#przekaski-jogurt-z-otrebami-grejpfrutem-i-migdalami">Jogurt z otrębami, grejpfrutem i migdałami</a></li>
+<li><a href="#przekaski-jogurt-z-sezamem-wisniami-i-kiwi">Jogurt z sezamem, wiśniami i kiwi</a></li>
+<li><a href="#przekaski-kakaowo-orzechowy-koktajl-z-bananem">Kakaowo-orzechowy koktajl z bananem</a></li>
+<li><a href="#przekaski-kakaowy-koktajl-truskawkowy-orzechy">Kakaowy koktajl truskawkowy + orzechy</a></li>
+<li><a href="#przekaski-kanapka-z-bialym-serem-i-pomidorem">Kanapka z białym serem i pomidorem</a></li>
+<li><a href="#przekaski-kanapka-z-bialym-serem-rzodkiewka-i-szczypiorkiem">Kanapka z białym serem, rzodkiewką i szczypiorkiem</a></li>
+<li><a href="#przekaski-kanapka-z-pasta-z-zielonego-groszku">Kanapka z pastą z zielonego groszku</a></li>
+<li><a href="#przekaski-kanapki-z-awokado-i-rzodkiewka">Kanapki z awokado i rzodkiewką</a></li>
+<li><a href="#przekaski-kanapki-z-cukinia-i-rzodkiewka">Kanapki z cukinią i rzodkiewką</a></li>
+<li><a href="#przekaski-kanapki-z-otrebowym-twarozkiem-salata-i-rzodkiewka">Kanapki z otrębowym twarożkiem, sałatą i rzodkiewką</a></li>
+<li><a href="#przekaski-kanapki-z-pasta-oliwkowa">Kanapki z pastą oliwkową</a></li>
+<li><a href="#przekaski-kanapki-z-pasta-z-awokado-i-fasoli">Kanapki z pastą z awokado i fasoli</a></li>
+<li><a href="#przekaski-kanapki-z-pasta-z-awokado-i-oliwek">Kanapki z pastą z awokado i oliwek</a></li>
+<li><a href="#przekaski-kanapki-z-pasta-z-awokado-i-rzodkiewki">Kanapki z pastą z awokado i rzodkiewki</a></li>
+<li><a href="#przekaski-kanapki-z-pasta-z-czerwonej-soczewicy-i-marchewki">Kanapki z pastą z czerwonej soczewicy i marchewki</a></li>
+<li><a href="#przekaski-kanapki-z-szynka-i-papryka">Kanapki z szynką i papryką</a></li>
+<li><a href="#przekaski-kanapki-z-twarozkiem-z-rzodkiewka-i-szczypiorkiem">Kanapki z twarożkiem z rzodkiewką i szczypiorkiem</a></li>
+<li><a href="#przekaski-koktajl-bananowo-truskawkowy-ze-slonecznikiem">Koktajl bananowo-truskawkowy ze słonecznikiem</a></li>
+<li><a href="#przekaski-koktajl-bananowy-z-czekolada-orzechy">Koktajl bananowy z czekoladą + orzechy</a></li>
+<li><a href="#przekaski-koktajl-bananowy-z-wiorkami-kokosowymi">Koktajl bananowy z wiórkami kokosowymi</a></li>
+<li><a href="#przekaski-koktajl-bounty">Koktajl bounty</a></li>
+<li><a href="#przekaski-koktajl-jagodowy-na-kefirze-z-siemieniem-lnianym-i-miodem">Koktajl jagodowy na kefirze z siemieniem lnianym i miodem</a></li>
+<li><a href="#przekaski-koktajl-malinowo-bananowy-z-chia">Koktajl malinowo-bananowy z chia</a></li>
+<li><a href="#przekaski-koktajl-malinowo-truskawkowo-orzechowy">Koktajl malinowo-truskawkowo-orzechowy</a></li>
+<li><a href="#przekaski-koktajl-mleczny-z-bananem-i-awokado">Koktajl mleczny z bananem i awokado</a></li>
+<li><a href="#przekaski-koktajl-mleczny-z-bananem-i-nasionami">Koktajl mleczny z bananem i nasionami</a></li>
+<li><a href="#przekaski-koktajl-truskawkowy-orzechy">Koktajl truskawkowy + orzechy</a></li>
+<li><a href="#przekaski-koktajl-z-cytryna-bananem-i-liscmi-pietruszki">Koktajl z cytryną, bananem i liśćmi pietruszki</a></li>
+<li><a href="#przekaski-koktajl-z-jagodami-i-platkami-owsianymi">Koktajl z jagodami i płatkami owsianymi</a></li>
+<li><a href="#przekaski-krem-jaglano-jogurtowo-bananowy-z-czeresniami-i-orzeszkami">Krem jaglano-jogurtowo-bananowy z czereśniami i orzeszkami</a></li>
+<li><a href="#przekaski-lekka-salatka-z-twarogiem-i-oliwkami">Lekka sałatka z twarogiem i oliwkami</a></li>
+<li><a href="#przekaski-malinowo-bananowy-koktajl-z-nasionami-dyni">Malinowo-bananowy koktajl z nasionami dyni</a></li>
+<li><a href="#przekaski-marchew-migdaly">Marchew, migdały</a></li>
+<li><a href="#przekaski-miodowy-koktajl-gruszkowy">Miodowy koktajl gruszkowy</a></li>
+<li><a href="#przekaski-miodowy-koktajl-z-czeresni">Miodowy koktajl z czereśni</a></li>
+<li><a href="#przekaski-miodowy-koktajl-z-jablkiem-orzechy">Miodowy koktajl z jabłkiem + orzechy</a></li>
+<li><a href="#przekaski-musli-cynamonowe-z-jogurtem-jablkiem-orzechami-i-czekolada">Musli cynamonowe z jogurtem, jabłkiem, orzechami i czekoladą</a></li>
+<li><a href="#przekaski-musli-z-grejpfrutem">Musli z grejpfrutem</a></li>
+<li><a href="#przekaski-musli-z-jablkiem-mlekiem-i-cynamonem">Musli z jabłkiem, mlekiem i cynamonem</a></li>
+<li><a href="#przekaski-omlet-biszkoptowy-z-cynamonem-jogurtem-i-malinami">Omlet biszkoptowy z cynamonem, jogurtem i malinami</a></li>
+<li><a href="#przekaski-orzechy-marchew-jablko">Orzechy, marchew, jabłko</a></li>
+<li><a href="#przekaski-owsianka-czekoladowa-z-pomarancza-i-pestkami-dyni">Owsianka czekoladowa z pomarańczą i pestkami dyni</a></li>
+<li><a href="#przekaski-placki-selerowo-owsiane">Placki selerowo-owsiane</a></li>
+<li><a href="#przekaski-placki-z-cukinii">Placki z cukinii</a></li>
+<li><a href="#przekaski-placki-z-otrebow-i-musli">Placki z otrębów i musli</a></li>
+<li><a href="#przekaski-placki-z-tunczykiem">Placki z tuńczykiem</a></li>
+<li><a href="#przekaski-roladki-z-tortilli-z-szynka-awokado-i-papryka">Roladki z tortilli z szynką, awokado i papryką</a></li>
+<li><a href="#przekaski-salatka-z-brokulami-marchwia-pomidorem-i-orzechami">Sałatka z brokułami, marchwią, pomidorem i orzechami</a></li>
+<li><a href="#przekaski-salatka-z-brokulami-pomidorek-i-serkiem-wiejskim">Sałatka z brokułami, pomidorek i serkiem wiejskim</a></li>
+<li><a href="#przekaski-salatka-z-brazowym-ryzem-burakiem-pomarancza-i-rukola">Sałatka z brązowym ryżem, burakiem, pomarańczą i rukolą</a></li>
+<li><a href="#przekaski-salatka-z-burakiem-fasolka-rzodkiewka-i-serkiem-wiejskim">Sałatka z burakiem, fasolką, rzodkiewką i serkiem wiejskim</a></li>
+<li><a href="#przekaski-salatka-z-fasoli-pomidora-z-natka-pietruszki">Sałatka z fasoli, pomidora z natką pietruszki</a></li>
+<li><a href="#przekaski-salatka-z-feta-suszonymi-pomidorami-i-oliwkami">Sałatka z fetą, suszonymi pomidorami i oliwkami</a></li>
+<li><a href="#przekaski-salatka-z-pomidorem-i-oliwkami">Sałatka z pomidorem i oliwkami</a></li>
+<li><a href="#przekaski-salatka-z-pomidorkami-truskawkami-i-mozzarella">Sałatka z pomidorkami, truskawkami i mozzarellą</a></li>
+<li><a href="#przekaski-serek-wiejski-z-gruszka-migdalami-i-kokosem">Serek wiejski z gruszką, migdałami i kokosem</a></li>
+<li><a href="#przekaski-serek-wiejski-z-nasionami-dyni-i-pomidorem">Serek wiejski z nasionami dyni i pomidorem</a></li>
+<li><a href="#przekaski-serek-wiejski-z-papryka">Serek wiejski z papryką</a></li>
+<li><a href="#przekaski-serek-wiejski-z-papryka-pomidorem-i-pestkami">Serek wiejski z papryką, pomidorem i pestkami</a></li>
+<li><a href="#przekaski-serek-wiejski-z-pomidorem-papryka-rzodkiewka-szczypiorkiem">Serek wiejski z pomidorem, papryką, rzodkiewką, szczypiorkiem</a></li>
+<li><a href="#przekaski-serek-wiejski-migdaly">Serek wiejski, migdały</a></li>
+<li><a href="#przekaski-smoothie-ananasowe-z-natka-pietruszki">Smoothie ananasowe z natką pietruszki</a></li>
+<li><a href="#przekaski-smoothie-bananowo-truskawkowe-z-chia">Smoothie bananowo-truskawkowe z chia</a></li>
+<li><a href="#przekaski-surowka-z-awokado-papryki-szczypiorku-i-natki">Surówka z awokado, papryki, szczypiorku i natki</a></li>
+<li><a href="#przekaski-slupki-marchwi-i-papryki-migdaly">Słupki marchwi i papryki, migdały</a></li>
+<li><a href="#przekaski-tarte-jablko-z-marchewka-i-orzechami">Tarte jabłko z marchewką i orzechami</a></li>
+<li><a href="#przekaski-tosty-z-bananem-malinami-i-czekolada">Tosty z bananem, malinami i czekoladą</a></li>
+<li><a href="#przekaski-tosty-z-mozzarella-szynka-pomidorkami-i-papryka">Tosty z mozzarellą, szynką, pomidorkami i papryką</a></li>
+<li><a href="#przekaski-truskawkowo-bananowy-koktajl-z-orzechami">Truskawkowo-bananowy koktajl z orzechami</a></li>
+<li><a href="#przekaski-truskawkowy-koktajl-z-czekolada">Truskawkowy koktajl z czekoladą</a></li>
+<li><a href="#przekaski-truskawkowy-koktajl-z-nasionami">Truskawkowy koktajl z nasionami</a></li>
+<li><a href="#przekaski-twarog-z-rukola-pomidorami-i-slonecznikiem-chleb">Twaróg z rukolą, pomidorami i słonecznikiem + chleb</a></li>
+<li><a href="#przekaski-warzywa-z-dipem-czosnkowym">Warzywa z dipem czosnkowym</a></li>
+<li><a href="#przekaski-wloska-kanapka">Włoska kanapka</a></li>
+</ul>
+</details>
+</section>
+</aside>
+
+<main>
+<section class="panel hero">
+<h1>Przepisy z archiwum Dieta.zip</h1>
+<p class="category-meta">Liczba przepisów: <strong>{{ total_recipes }}</strong></p>
+</section>
+{{ recipes_html|safe }}
+</main>
+{{ ingredient_index_html|safe }}
+<script>
+    const input = document.getElementById('recipe-search');
+    const ingredientInput = document.getElementById('ingredient-search');
+    const recipes = Array.from(document.querySelectorAll('.recipe'));
+    const categories = Array.from(document.querySelectorAll('[data-category-section]'));
+    const resultsBar = document.getElementById('results-bar');
+
+    function normalizeText(value) {
+      return value
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[̀-ͯ]/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
+    function parseIngredientTerms(value) {
+      return value
+        .split(',')
+        .map(term => normalizeText(term))
+        .filter(Boolean);
+    }
+
+    function ingredientTermMatches(term, ingredientsText) {
+      if (!term) return true;
+      if (ingredientsText.includes(term)) return true;
+      const fallbackLen = term.length >= 7 ? 5 : term.length >= 5 ? 4 : 3;
+      const fallback = term.slice(0, fallbackLen);
+      return fallback.length >= 3 && ingredientsText.includes(fallback);
+    }
+
+    function updateResults() {
+      const queryRaw = input.value.trim();
+      const query = normalizeText(queryRaw);
+      const ingredientTerms = parseIngredientTerms(ingredientInput.value);
+      let visible = 0;
+
+      recipes.forEach(recipe => {
+        const haystack = normalizeText(recipe.dataset.search || '');
+        const ingredients = normalizeText(recipe.dataset.ingredients || '');
+        const textMatch = !query || haystack.includes(query);
+        const ingredientMatch = ingredientTerms.every(term => ingredientTermMatches(term, ingredients));
+        const match = textMatch && ingredientMatch;
+        recipe.classList.toggle('hidden', !match);
+        if (match) visible += 1;
+      });
+
+      categories.forEach(section => {
+        const hasVisible = Array.from(section.querySelectorAll('.recipe')).some(r => !r.classList.contains('hidden'));
+        section.classList.toggle('hidden', !hasVisible);
+      });
+
+      const filters = [];
+      if (queryRaw) filters.push(`tekst: „${input.value}”`);
+      if (ingredientTerms.length) filters.push(`składniki: „${ingredientInput.value}”`);
+      resultsBar.textContent = !filters.length
+        ? `Łącznie przepisów: ${recipes.length}`
+        : `Wyniki dla ${filters.join(' + ')}: ${visible} / ${recipes.length}`;
+    }
+
+    input.addEventListener('input', updateResults);
+    ingredientInput.addEventListener('input', updateResults);
+    updateResults();
+</script>
+</body>
+</html>

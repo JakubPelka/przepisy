@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ 'Edytuj' if recipe else 'Dodaj' }} Przepis</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f8f9fa; padding-top: 20px; padding-bottom: 40px; }
+        .form-label { font-weight: bold; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <a href="/" class="btn btn-secondary mb-3">&larr; Wróć</a>
+    <h2 class="mb-4">{{ 'Edytuj' if recipe else 'Dodaj Nowy' }} Przepis</h2>
+
+    <div class="card">
+        <div class="card-body">
+            <form method="POST">
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">ID (np. sniadanie-nazwa-przepisu)</label>
+                        <input type="text" class="form-control" name="id" value="{{ recipe.id if recipe else '' }}" required {{ 'readonly' if recipe else '' }}>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Tytuł</label>
+                        <input type="text" class="form-control" name="title" value="{{ recipe.title if recipe else '' }}" required>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Kategoria</label>
+                        <select class="form-select" name="category" required>
+                            <option value="Śniadanie" {% if recipe and recipe.category == 'Śniadanie' %}selected{% endif %}>Śniadanie</option>
+                            <option value="Lunch" {% if recipe and recipe.category == 'Lunch' %}selected{% endif %}>Lunch</option>
+                            <option value="Obiad" {% if recipe and recipe.category == 'Obiad' %}selected{% endif %}>Obiad</option>
+                            <option value="Przekąski" {% if recipe and recipe.category == 'Przekąski' %}selected{% endif %}>Przekąski</option>
+                        </select>
+                    </div>
+                    <div class="col-md-8">
+                        <label class="form-label">Składniki (do filtrowania - rozdzielone | )</label>
+                        <input type="text" class="form-control" name="ingredients_search" value="{{ recipe.ingredients_search if recipe else '' }}">
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Tekst do wyszukiwania (data-search)</label>
+                    <textarea class="form-control" name="search_text" rows="2">{{ recipe.search_text if recipe else '' }}</textarea>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Wariant / Informacja o źródle (opcjonalnie)</label>
+                    <input type="text" class="form-control" name="source_variant" value="{{ recipe.source_variant if recipe else '' }}">
+                </div>
+
+                <h5 class="mt-4 mb-3">Wartości odżywcze</h5>
+                <div class="row mb-3">
+                    <div class="col-md-3">
+                        <label class="form-label">Kcal</label>
+                        <input type="number" step="0.01" class="form-control" name="kcal" value="{{ recipe.kcal if recipe else '0' }}">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Białko (g)</label>
+                        <input type="number" step="0.01" class="form-control" name="protein" value="{{ recipe.protein if recipe else '0' }}">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Węglowodany (g)</label>
+                        <input type="number" step="0.01" class="form-control" name="carbs" value="{{ recipe.carbs if recipe else '0' }}">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Tłuszcz (g)</label>
+                        <input type="number" step="0.01" class="form-control" name="fat" value="{{ recipe.fat if recipe else '0' }}">
+                    </div>
+                </div>
+
+                <h5 class="mt-4 mb-3">Treść przepisu (HTML)</h5>
+                
+                <div class="mb-3">
+                    <label class="form-label">Lista Składników (np. &lt;ul&gt;&lt;li&gt;...&lt;/li&gt;&lt;/ul&gt;)</label>
+                    <textarea class="form-control text-monospace" style="font-family: monospace;" name="ingredients_html" rows="5" required>{{ recipe.ingredients_html if recipe else '<ul>\n<li>...</li>\n</ul>' }}</textarea>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Sposób przygotowania (np. &lt;ol&gt;&lt;li&gt;...&lt;/li&gt;&lt;/ol&gt;)</label>
+                    <textarea class="form-control text-monospace" style="font-family: monospace;" name="instructions_html" rows="5" required>{{ recipe.instructions_html if recipe else '<ol>\n<li>...</li>\n</ol>' }}</textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">Zapisz</button>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>
