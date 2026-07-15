@@ -20,6 +20,9 @@
             <form action="/export" method="POST" class="d-inline">
                 <button type="submit" class="btn btn-success">Eksportuj do HTML</button>
             </form>
+            <form action="/deploy" method="POST" class="d-inline" onsubmit="return confirm('To zaktualizuje statyczny HTML i od razu wyśle go na GitHuba. Czy chcesz kontynuować?');">
+                <button type="submit" class="btn btn-warning text-dark fw-bold">Commit & Push (GitHub)</button>
+            </form>
         </div>
         <div class="col-md-4">
             <input type="text" id="searchInput" class="form-control" placeholder="Szukaj...">

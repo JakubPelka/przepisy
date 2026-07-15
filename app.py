@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 import database
 import os
+import subprocess
 
 app = Flask(__name__)
 app.secret_key = 'super_secret_key_for_local_app'
@@ -163,6 +164,25 @@ def export_html():
     try:
         build_static_html()
         flash('Wyeksportowano do index.html!', 'success')
+    except Exception as e:
+        flash(f'Błąd eksportu: {e}', 'danger')
+    return redirect(url_for('index'))
+
+@app.route('/deploy', methods=['POST'])
+def deploy_html():
+    try:
+        # First export the HTML just in case
+        build_static_html()
+        
+        # Git commands
+        subprocess.run(['git', 'add', '.'], check=True)
+        # Using simple commit message
+        subprocess.run(['git', 'commit', '-m', 'Zaktualizowano przepisy z poziomu panelu'], check=False) # check=False in case there are no changes
+        subprocess.run(['git', 'push', 'origin', 'main'], check=True)
+        
+        flash('Wyeksportowano i pomyślnie wysłano na GitHub!', 'success')
+    except subprocess.CalledProcessError as e:
+        flash(f'Błąd podczas operacji Git: {e}', 'danger')
     except Exception as e:
         flash(f'Błąd eksportu: {e}', 'danger')
     return redirect(url_for('index'))
